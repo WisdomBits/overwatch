@@ -1,6 +1,8 @@
 # Overwatch — A Lightweight Yet Powerful State Manager
+[![Build Size](https://img.shields.io/bundlephobia/minzip/overwatch-ts?label=bundle%20size&style=flat&colorA=000000&colorB=000000)](https://bundlephobia.com/result?p=overwatch-ts)
+[![Version](https://img.shields.io/npm/v/overwatch-ts?style=flat&colorA=000000&colorB=000000)](https://www.npmjs.com/package/overwatch-ts)
 
-OverWatch is a modern, TypeScript-first implementation of the **Publisher-Subscriber pattern**. It's a super lightweight (unpacked : 30KB) yet expressive **state management library for React Js & Next Js**, built on the **singleton design pattern**. It offers support for **global and instance-specific middlewares**, **immutability**, **batched updates**, and **custom event communication** — all designed to be used without extensive boilerplate.
+OverWatch is a modern, TypeScript-first implementation of the **Publisher-Subscriber pattern**. It's a super lightweight yet expressive **state management library for React Js & Next Js**, built on the **singleton design pattern**. It offers support for **global and instance-specific middlewares**, **immutability**, **batched updates**, and **custom event communication** — all designed to be used without extensive boilerplate.
 
 Goal with OverWatch was to prioritize reusability, a positive developer experience, and clear component-level state and event tracking.
 
@@ -65,7 +67,7 @@ createSharedState('theme', { mode: 'dark' });
 > Use this hook in any component to **read** and **update** your shared state. It's your primary interface for interacting with OverWatch.
 
 ```ts
-import { useSharedState } from '@your-library-name'; // Replace with your actual package name
+import { useSharedState } from 'overwatch-ts'; 
 
 const ThemeSwitcher = () => {
   const [theme, setTheme] = useSharedState<{ mode: string }>('theme');
@@ -87,7 +89,7 @@ const ThemeSwitcher = () => {
 > This hook allows you to extract only a specific part of a shared state object, which can help optimize component rendering by preventing unnecessary re-renders.
 
 ```ts
-import { usePicker } from 'overwatch-ts'; // Replace with your actual package name
+import { usePicker } from 'overwatch-ts'; 
 
 const ThemeIndicator = () => {
   const mode = usePicker('theme', t => t.mode);
@@ -105,7 +107,7 @@ const ThemeIndicator = () => {
 > Use this to attach one or more **global middlewares** to a shared state key. These middlewares will apply to all updates for that specific state key.
 
 ```ts
-import { applyMiddleware, createSharedState } from 'overwatch-ts'; // Replace with your actual package name
+import { applyMiddleware, createSharedState } from 'overwatch-ts'; 
 
 // A simple logger for all 'theme' state changes
 const globalThemeLogger = (newValue, next) => {
@@ -123,7 +125,7 @@ applyMiddleware('theme', globalThemeLogger);
 > If you need middleware to apply only within a specific component, you can pass it directly when using `useSharedState`.
 
 ```ts
-import { useSharedState } from 'overwatch-ts'; // Replace with your actual package name
+import { useSharedState } from 'overwatch-ts'; 
 
 const MyComponentWithLocalLogging = () => {
   const localLogger = (val, next) => {
@@ -150,7 +152,7 @@ const MyComponentWithLocalLogging = () => {
 **Broadcast an event:**
 
 ```ts
-import { useBroadcast } from 'overwatch-ts'; // Replace with your actual package name
+import { useBroadcast } from 'overwatch-ts'; 
 
 const LogoutButton = () => {
   const broadcast = useBroadcast();
@@ -167,7 +169,7 @@ const LogoutButton = () => {
 **Listen for an event:**
 
 ```ts
-import { useEvent } from 'overwatch-ts'; // Replace with your actual package name
+import { useEvent } from 'overwatch-ts'; 
 import { useNavigate } from 'react-router-dom'; // Example for React Router
 
 const AuthListener = () => {
