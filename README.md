@@ -1,9 +1,9 @@
-# Overwatch — A Lightweight Yet Powerful State Manager
-![Alt text](https://ucarecdn.com/ac2512e2-1e6a-442a-919a-849d13313567/overwatch.png "overwatch")
+# Overwatch — A Lightweight Sensible State Manager
+![Alt text](https://ucarecdn.com/e22cf47b-ada8-420a-8345-745c2e3c53e9/overwatch1.png "overwatch")
 [![Build Size](https://img.shields.io/bundlephobia/minzip/overwatch-ts?label=bundle%20size&style=flat&colorA=000000&colorB=000000)](https://bundlephobia.com/result?p=overwatch-ts)
 [![Version](https://img.shields.io/npm/v/overwatch-ts?style=flat&colorA=000000&colorB=000000)](https://www.npmjs.com/package/overwatch-ts)
 
-OverWatch is a modern, TypeScript-first implementation of the **Publisher-Subscriber pattern**. It's a super lightweight yet expressive **state management library for React Js & Next Js**, built on the **singleton design pattern**. It offers support for **global and instance-specific middlewares**, **immutability**, **batched updates**, and **custom event communication** — all designed to be used without extensive boilerplate.
+A minimal API with developer flexibility, TypeScript-first state-management solution, inspired by the simplicity of **Zustland**, It's a super lightweight yet expressive **state management library for React Js & Next Js**, built on the **singleton design pattern**. It offers support for **global and instance-specific middlewares**, **immutability**, **batched updates**, and **custom event communication** — all designed to be used without extensive boilerplate.
 
 Goal with OverWatch was to prioritize reusability, a positive developer experience, and clear component-level state and event tracking.
 
@@ -18,9 +18,11 @@ OverWatch is:
 * Built with **React hooks and TypeScript** (offering 100% type safety for predictable development).
 * **Lightweight** — you won't find context providers, reducers, or dispatches here.
 * Ideal for managing both **component-level and application-level shared state**, providing flexibility for various needs.
+* **Inspired by Zustand**: builds upon the simplicity and performance-first design of Zustand but reimagines it with a focus on advanced middleware, event-driven architecture, immutable state enforcement, and without the need for central store boilerplate.
+
 
 ---
-## Why This Exists: State management should be straightforward
+## Why This Exists: State management should be straightforward & Sensible
 
 If you've ever felt that Redux was too comprehensive for your needs, or that libraries like Zustand didn't offer enough specific control, OverWatch aims to provide a balanced approach. It combines a **minimal API** with **flexibility** to enhance your developer experience.
 
