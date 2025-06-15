@@ -1,4 +1,5 @@
 # Overwatch — A Lightweight Yet Powerful State Manager
+![Alt text](https://ucarecdn.com/ac2512e2-1e6a-442a-919a-849d13313567/overwatch.png "overwatch")
 [![Build Size](https://img.shields.io/bundlephobia/minzip/overwatch-ts?label=bundle%20size&style=flat&colorA=000000&colorB=000000)](https://bundlephobia.com/result?p=overwatch-ts)
 [![Version](https://img.shields.io/npm/v/overwatch-ts?style=flat&colorA=000000&colorB=000000)](https://www.npmjs.com/package/overwatch-ts)
 
