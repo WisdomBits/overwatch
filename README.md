@@ -207,6 +207,21 @@ In many applications, especially those with deep component trees or when React C
 
 ---
 
+## What's Next: The Road Ahead for overwatch-ts
+
+We're constantly working to make `overwatch-ts` even more powerful and developer-friendly. Here's a peek at what's currently in progress and on the roadmap:
+
+* **SSR Support (Server-Hydration APIs):** Building out minimal APIs to ensure seamless server-side rendering.
+* **DevTools Integration:** Developing dedicated DevTools support, giving you clear insights into your state and events.
+* **Persistence APIs with Security:** Implementing flexible APIs for state persistence, allowing you to easily save and load state, with a strong focus on secure data handling.
+* **Comprehensive Documentation:** Expanding our documentation to cover more advanced use cases, provide clearer examples, and offer in-depth guides to help you master `overwatch-ts`.
+
+---
+
+Your feedback and contributions are always welcome as we build these features!
+
+---
+
 ## 📜 License
 
 MIT — feel free to fork and adapt OverWatch for your projects.
