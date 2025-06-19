@@ -3,6 +3,10 @@
 [![Build Size](https://img.shields.io/bundlephobia/minzip/overwatch-ts?label=bundle%20size&style=flat&colorA=000000&colorB=000000)](https://bundlephobia.com/result?p=overwatch-ts)
 [![Version](https://img.shields.io/npm/v/overwatch-ts?style=flat&colorA=000000&colorB=000000)](https://www.npmjs.com/package/overwatch-ts)
 
+> ### 🚀 What’s New?
+> Overwatch now supports Server-Side Rendering **SSR**  (v 1.0.7)
+---
+
 A minimal API with developer flexibility, TypeScript-first state-management solution, inspired by the simplicity of **Zustand**, It's a super lightweight yet expressive **state management library for React Js & Next Js**, built on the **singleton design pattern**. It offers support for **global and instance-specific middlewares**, **immutability**, **batched updates**, and **custom event communication** — all designed to be used without extensive boilerplate.
 
 Goal with OverWatch was to prioritize reusability, a positive developer experience, and clear component-level state and event tracking.
@@ -207,21 +211,120 @@ In many applications, especially those with deep component trees or when React C
 
 ---
 
-## What's Next: The Road Ahead for overwatch-ts
+## Server-Side Rendering (SSR) Support
 
-We're constantly working to make `overwatch-ts` even more powerful and developer-friendly. Here's a peek at what's currently in progress and on the roadmap:
+Overwatch supports SSR (Server Side Rendering) via a dedicated `ServerStore` interface, giving you full control over how shared state is created, serialized, and hydrated across the client-server boundary.
 
-* **SSR Support (Server-Hydration APIs):** Building out minimal APIs to ensure seamless server-side rendering.
-* **DevTools Integration:** Developing dedicated DevTools support, giving you clear insights into your state and events.
-* **Persistence APIs with Security:** Implementing flexible APIs for state persistence, allowing you to easily save and load state, with a strong focus on secure data handling.
-* **Comprehensive Documentation:** Expanding our documentation to cover more advanced use cases, provide clearer examples, and offer in-depth guides to help you master `overwatch-ts`.
+How it use (**Easy!**)
+* On the server, create a new store instance using createServerStore().
+* Set and read state via that store during rendering.
+* On the client, hydrate the store using useHydratedStore hook before your app renders.
 
----
-
-Your feedback and contributions are always welcome as we build these features!
+> That's it 3 steps
 
 ---
 
+### 🧩 The ServerStore Interface
+
+Use `createServerStore()` to get a per-request store instance:
+
+```ts
+const serverStore = createServerStore();
+```
+
+Use `serverStore.getSnapshot()` to pass it to the client, and `serverStore.hydrate()` or `useHydratedStore` on the client to Hydrate client-side stores with no flickering.
+
+---
+
+### 🧪 Example 1 – SSR in React (Node Server)
+
+```tsx
+// Server: Express/Node
+import { createServerStore } from 'overwatch-ts';
+
+const serverStore = createServerStore();
+serverStore.set('theme', 'dark'); // Inject initial state
+
+const app = renderToString(
+  <App store={serverStore} />
+);
+
+// Send snapshot to client
+const initialState = serverStore.getSnapshot();
+res.send(`
+  <script>window.__OVERWATCH_SNAPSHOT__ = ${JSON.stringify(initialState)}</script>
+`);
+```
+
+```tsx
+// Client: Hydrate snapshot
+import { useHydratedStore } from 'overwatch-ts';
+
+if (typeof window !== 'undefined' && window.__OVERWATCH_SNAPSHOT__) {
+  useHydratedStore(window.__OVERWATCH_SNAPSHOT__);
+}
+```
+
+---
+
+### ⚡ Example 2 – With Next.js (App Router)
+
+```tsx
+// app/page.tsx
+import { createServerStore, createSharedState } from 'overwatch-ts';
+
+export default function Page() {
+  const store = createServerStore();
+
+  // Create a shared state and initialise the value | Equivalent of serverStore.set for React
+  createSharedState('counter', { count: 7 }, store);
+
+  const snapshot = store.getSnapshot();
+
+  return (
+    <>
+      <h1>SSR + Hydration Example</h1>
+      <Counter initialSnapshot={snapshot} />
+    </>
+  );
+}
+```
+
+```tsx
+// app/counter.tsx (Client Component)
+'use client';
+
+import { useSharedState, useHydratedStore } from 'overwatch-ts';
+
+export default function Counter({ initialSnapshot }: { initialSnapshot: Record<string, any> }) {
+  const isHydrated = useHydratedStore(initialSnapshot); // Hydrates globalStore
+
+  const [counter, setCounter] = useSharedState<{ count: number }>('counter');
+
+  if (!isHydrated) return <p>Loading...</p>;
+
+  return (
+    <div>
+      <p>Count: {counter.count}</p>
+      <button onClick={() => setCounter({ count: counter.count + 1 })}>
+        Increment
+      </button>
+    </div>
+  );
+}
+```
+
+---
+
+### ✅ Summary
+
+* Use `createServerStore()` to create scoped state per request.
+* Populate initial state using `createSharedState(...)`.
+* Use `store.getSnapshot()` and pass it to the client.
+* Hydrate on the client using `useHydratedStore(...)` before using hooks.
+* All hooks internally default to the global store unless a `store` is passed manually. (Not Recommended, only for advance use cases)
+
+---
 ## 📜 License
 
 MIT — feel free to fork and adapt OverWatch for your projects.
