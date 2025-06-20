@@ -1,6 +1,6 @@
 {
   "name": "overwatch-ts",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "type": "module",
   "main": "dist/overwatch.cjs.js",
   "module": "dist/overwatch.es.js",
@@ -43,6 +43,7 @@
     "eslint-plugin-react-refresh": "^0.4.19",
     "globals": "^16.0.0",
     "immer": "^10.1.1",
+    "rollup-plugin-preserve-directives": "^0.4.0",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.30.1",
     "vite": "^6.3.5",
