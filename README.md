@@ -211,14 +211,14 @@ In many applications, especially those with deep component trees or when React C
 
 ---
 
-## Server-Side Rendering (SSR) Support
+## ✨Server-Side Rendering (SSR) Support
 
 Overwatch supports SSR (Server Side Rendering) via a dedicated `ServerStore` interface, giving you full control over how shared state is created, serialized, and hydrated across the client-server boundary.
 
-How it use (**Easy!**)
+How it use (**✨Easy!**)
 * On the server, create a new store instance using createServerStore().
 * Set and read state via that store during rendering.
-* On the client, hydrate the store using useHydratedStore hook before your app renders.
+* On the client, hydrate the store using Hyrated wrapper before your app renders.
 
 > That's it 3 steps
 
@@ -269,48 +269,45 @@ if (typeof window !== 'undefined' && window.__OVERWATCH_SNAPSHOT__) {
 
 ### ⚡ Example 2 – With Next.js (App Router)
 
-```tsx
-// app/page.tsx
-import { createServerStore, createSharedState } from 'overwatch-ts';
+```tsx  file=overwatchStore.js
+'use client'
 
-export default function Page() {
-  const store = createServerStore();
+import { createServerStore } from 'overwatch-ts';
 
-  // Create a shared state and initialise the value | Equivalent of serverStore.set for React
-  createSharedState('counter', { count: 7 }, store);
+export const serverStore = createServerStore();
+```
 
-  const snapshot = store.getSnapshot();
+```tsx file=app/page.tsx
+import { Hydrated } from 'overwatch-ts';
+export async function getServerSideProps() {
+  // Set some state server-side
 
+  serverStore.set('theme', { mode: 'dark' });
+
+  return {
+    props: {
+      initialSnapshot: serverStore.getSnapshot(),
+    },
+  };
+}
+
+export default function Home({ initialSnapshot }) {
   return (
-    <>
-      <h1>SSR + Hydration Example</h1>
-      <Counter initialSnapshot={snapshot} />
-    </>
+    // Wrapper that renders children only after client is fully hydrated
+     <Hydrated snapshot={initialSnapshot}>
+      <ToogleTheme /> // client *components
+    </Hydrated>
   );
 }
 ```
-
-```tsx
-// app/counter.tsx (Client Component)
-'use client';
-
-import { useSharedState, useHydratedStore } from 'overwatch-ts';
-
-export default function Counter({ initialSnapshot }: { initialSnapshot: Record<string, any> }) {
-  const isHydrated = useHydratedStore(initialSnapshot); // Hydrates globalStore
-
-  const [counter, setCounter] = useSharedState<{ count: number }>('counter');
-
-  if (!isHydrated) return <p>Loading...</p>;
-
-  return (
-    <div>
-      <p>Count: {counter.count}</p>
-      <button onClick={() => setCounter({ count: counter.count + 1 })}>
-        Increment
-      </button>
-    </div>
-  );
+On the client
+```tsx file=ToogleTheme.js
+"use client"
+export const ToogleTheme = () => {
+  const [theme, setTheme] = useSharedState('theme');
+  return (<>
+    <h1>{theme.mode}</h1>
+  </>)
 }
 ```
 
@@ -321,7 +318,7 @@ export default function Counter({ initialSnapshot }: { initialSnapshot: Record<s
 * Use `createServerStore()` to create scoped state per request.
 * Populate initial state using `createSharedState(...)`.
 * Use `store.getSnapshot()` and pass it to the client.
-* Hydrate on the client using `useHydratedStore(...)` before using hooks.
+* Hydrate on the client using `Hydrated` wrapper before using hooks.
 * All hooks internally default to the global store unless a `store` is passed manually. (Not Recommended, only for advance use cases)
 
 ---
