@@ -215,7 +215,7 @@ In many applications, especially those with deep component trees or when React C
 
 Overwatch supports SSR (Server Side Rendering) via a dedicated `ServerStore` interface, giving you full control over how shared state is created, serialized, and hydrated across the client-server boundary.
 
-How it use (**✨Easy!**)
+How to use (**✨Easy!**)
 * On the server, create a new store instance using createServerStore().
 * Set and read state via that store during rendering.
 * On the client, hydrate the store using Hyrated wrapper before your app renders.
