@@ -18,7 +18,7 @@ interface HydratedProps {
 export function Hydrated({ snapshot, children }: HydratedProps) {
   const hydrated = useHydratedStore(snapshot);
 
-  if (!hydrated) return null; // or return a loading skeleton
+  if (!hydrated) return null;
 
   return <>{children}</>;
 }
