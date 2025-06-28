@@ -5,21 +5,22 @@ import { globalStore, ServerStore } from './createServerStore';
 import { persistValue, getPersistedValue, setPersistence } from './persistance';
 
 
-export function createSharedState<T>(key: string, initialValue: T, store: ServerStore = globalStore, persist?: "localStorage" | "sessionStorage") {
-  if(persist) setPersistence(key, persist);
+export function createSharedState<T>(key: string, initialValue: T, options: {store?: ServerStore, persist?: "localStorage" | "sessionStorage" }) {
+  if(!options?.store) options.store = globalStore
+  if(options?.persist) setPersistence(key, options?.persist);
   const persisted = getPersistedValue<T>(key);
-  if (!store.getSnapshot().hasOwnProperty(key)) {
-    store.set(key,  persisted !== undefined ? persisted : initialValue);
+  if (!options.store.getSnapshot().hasOwnProperty(key)) {
+    options.store.set(key,  persisted !== undefined ? persisted : initialValue);
   }
 }
 
 export function batchCreateSharedStates(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   stateObj: Record<string, any>,
-  store?: ServerStore,
-  persist?: "localStorage" | "sessionStorage"
+  options: {store?: ServerStore, persist?: "localStorage" | "sessionStorage" }
 ) {
   Object.entries(stateObj).forEach(([key, value]) => {
-    createSharedState(key, value, store,persist);
+    createSharedState(key, value, options);
   });
 }
 
