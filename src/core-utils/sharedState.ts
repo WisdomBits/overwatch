@@ -5,7 +5,7 @@ import { globalStore, ServerStore } from './createServerStore';
 import { persistValue, getPersistedValue, setPersistence } from './persistance';
 
 
-export function createSharedState<T>(key: string, initialValue: T, options: {store?: ServerStore, persist?: "localStorage" | "sessionStorage" }) {
+export function createSharedState<T>(key: string, initialValue: T, options?: {store?: ServerStore, persist?: "localStorage" | "sessionStorage" }) {
   let store = options?.store;
   if(!store) store = globalStore
   if(options?.persist) setPersistence(key, options?.persist);
