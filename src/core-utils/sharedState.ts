@@ -6,11 +6,12 @@ import { persistValue, getPersistedValue, setPersistence } from './persistance';
 
 
 export function createSharedState<T>(key: string, initialValue: T, options: {store?: ServerStore, persist?: "localStorage" | "sessionStorage" }) {
-  if(!options?.store) options.store = globalStore
+  let store = options?.store;
+  if(!store) store = globalStore
   if(options?.persist) setPersistence(key, options?.persist);
   const persisted = getPersistedValue<T>(key);
-  if (!options.store.getSnapshot().hasOwnProperty(key)) {
-    options.store.set(key,  persisted !== undefined ? persisted : initialValue);
+  if (!store.getSnapshot().hasOwnProperty(key)) {
+    store.set(key,  persisted !== undefined ? persisted : initialValue);
   }
 }
 
