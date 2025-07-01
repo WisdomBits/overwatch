@@ -1,5 +1,6 @@
 {
   "name": "overwatch-ts",
+  "description": "A blazing-fast, zero-boilerplate state management library for React & Next.js",
   "version": "1.1.4",
   "type": "module",
   "main": "dist/overwatch.cjs.js",
