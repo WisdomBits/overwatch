@@ -1,23 +1,29 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import dts from 'vite-plugin-dts';
-import { addDirective } from 'rollup-plugin-add-directive';
+import { addUseClientOnlyToClientFiles } from './Plugins/addDirectives';
 
 export default defineConfig({
   plugins: [
     react(),
-    addDirective(),
     dts({
       entryRoot: 'src',
       insertTypesEntry: true,
-    })
+      outDir: 'dist/types',
+    }),
+    addUseClientOnlyToClientFiles(),
   ],
   build: {
     lib: {
-      entry: 'src/index.ts',
+       entry: {
+        index: 'src/index.ts',
+        server: 'src/server.ts',
+      },
       name: 'overwatch',
       formats: ['es', 'cjs'],
-      fileName: (format) => `overwatch.${format}.js`
+      fileName: (format, entryName) => {
+        return `${entryName}.${format}.js`;
+      }
     },
     rollupOptions: {
       external: ['react', 'react-dom'],

@@ -1,16 +1,21 @@
 {
   "name": "overwatch-ts",
   "description": "A blazing-fast, zero-boilerplate state management library for React & Next.js",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "type": "module",
-  "main": "dist/overwatch.cjs.js",
-  "module": "dist/overwatch.es.js",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.es.js",
   "types": "dist/types/index.d.ts",
-  "exports": {
-    ".": {
-      "import": "./dist/overwatch.es.js",
-      "require": "./dist/overwatch.cjs.js",
+    "exports": {
+      ".": {
+      "import": "./dist/index.es.js",
+      "require": "./dist/index.cjs.js",
       "types": "./dist/types/index.d.ts"
+    },
+    "./server": {
+      "import": "./dist/server.es.js",
+      "require": "./dist/server.cjs.js",
+      "types": "./dist/types/server.d.ts"
     }
   },
   "files": [
@@ -44,7 +49,6 @@
     "eslint-plugin-react-refresh": "^0.4.19",
     "globals": "^16.0.0",
     "immer": "^10.1.1",
-    "rollup-plugin-add-directive": "^1.0.0",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.30.1",
     "vite": "^6.3.5",
