@@ -1,255 +1,668 @@
-# Overwatch TS Comic Guestbook / Feedback Wall
+# Overwatch — A Lightweight Sensible State Manager
+![Alt text](https://ucarecdn.com/e22cf47b-ada8-420a-8345-745c2e3c53e9/overwatch1.png "overwatch")
+[![Build Size](https://img.shields.io/bundlephobia/minzip/overwatch-ts?label=bundle%20size&style=flat&colorA=000000&colorB=000000)](https://bundlephobia.com/result?p=overwatch-ts)
+[![Version](https://img.shields.io/npm/v/overwatch-ts?style=flat&colorA=000000&colorB=000000)](https://www.npmjs.com/package/overwatch-ts)
 
-![Overwatch TS Comic Banner](https://github.com/WisdomBits/overwatch-Introduction/blob/main/src/assets/overwatchAvatar.png?raw=true)
+> ### 🚀 What’s New?
+> Overwatch now supports Server-Side Rendering **SSR**  (v 1.0.7)
+---
+
+A minimal API with developer flexibility, TypeScript-first state-management solution, inspired by the simplicity of **Zustand**, It's a super lightweight yet expressive **state management library for React Js & Next Js**, built on the **singleton design pattern**. It offers support for **global and instance-specific middlewares**, **immutability**, **batched updates**, and **custom event communication** — all designed to be used without extensive boilerplate.
+
+Goal with OverWatch was to prioritize reusability, a positive developer experience, and clear component-level state and event tracking.
+
+
+Read the full documentation at [overwatchts.in/docs](https://overwatchts.in/docs).
 
 ---
 
-## Table of Contents
+## 🚀 What Is OverWatch?
 
-- [What is this project?](#what-is-this-project)
-- [Why Overwatch TS?](#why-overwatch-ts)
-- [How does it work?](#how-does-it-work)
-- [Getting Started](#getting-started)
-- [Project Structure](#project-structure)
-- [Key Concepts & Code Walkthrough](#key-concepts--code-walkthrough)
-- [How to Contribute](#how-to-contribute)
-- [FAQ](#faq)
-- [Resources](#resources)
+> OverWatch evolved from an internal utility that leveraged the singleton and pub-sub patterns. We've now refined it for React, incorporating hooks, strong typing, and automatic cleanup to make it accessible to everyone.
+
+OverWatch is:
+
+* Built with **React hooks and TypeScript** (offering 100% type safety for predictable development).
+* **Lightweight** — you won't find context providers, reducers, or dispatches here.
+* Ideal for managing both **component-level and application-level shared state**, providing flexibility for various needs.
+* **Inspired by Zustand**: builds upon the simplicity and performance-first design of Zustand but reimagines it with a focus on advanced middleware, event-driven architecture, immutable state enforcement, and without the need for central store boilerplate.
+
+
+---
+## Why This Exists: State management should be straightforward & Sensible
+
+If you've ever felt that Redux was too comprehensive for your needs, or that libraries like Zustand didn't offer enough specific control, OverWatch aims to provide a balanced approach. It combines a **minimal API** with **flexibility** to enhance your developer experience.
 
 ---
 
-## What is this project?
+## Architecture: How It Works
 
-A **comic-style, public feedback wall** where users can leave a short message (like a digital guestbook). Each user can submit, edit, or delete one message. All messages are public and visible to everyone.
+At its core, OverWatch uses a **pub-sub pattern** to manage state effectively:
 
-- 🦸‍♂️ **Comic UI**: Playful, bold, and fun!
-- 📝 **One message per user**: Edit or delete your own.
-- 🌍 **Public wall**: See everyone's feedback in real time.
-- ⚡️ **Powered by [Overwatch TS](https://docs.overwatchts.in/docs)**: A modern, minimal, and powerful state management library for React/Next.js.
-
----
-
-## Why Overwatch TS?
-
-**Overwatch TS** is a TypeScript-first, minimal, and flexible state management solution for React and Next.js. It is:
-
-- **Lightweight**: No providers, reducers, or boilerplate.
-- **Singleton-based**: Global state is easy and fast.
-- **Immutability & batching**: Safe and performant.
-- **Event-driven**: Custom events and pub/sub built in.
-- **Persistence**: Easily persist state to localStorage/sessionStorage.
-- **Inspired by Zustand, but with more power and less fuss!**
-
-**Why not Redux, Context, or Zustand?**
-
-- No verbose setup or context trees.
-- No need for reducers or actions.
-- No prop drilling or context re-renders.
-- Just simple, direct, and type-safe state.
+* Every **state key** functions as a communication **channel**.
+* Components can **subscribe** to updates on these channels, acting as listeners.
+* You can **publish changes** to state, either globally or specifically.
+* **Middleware pipelines** run before changes are published, allowing for custom logic.
+* **Batching** ensures that multiple updates are grouped efficiently, optimizing performance.
+* **Immutability** is maintained, helping your state remain consistent and easy to reason about.
 
 ---
 
-## How does it work?
+## How to Use: Getting Started
 
-### 1. **State is created and persisted globally**
+### Installation
+To get started with OverWatch-TS, simply install it using npm or yarn:
 
 ```ts
-// src/FeedbackWall.tsx
-createSharedState(
-  'user',
-  { id: '', name: '', isAnonymous: false, avatar: '' },
-  { persist: 'localStorage' }
-);
-createSharedState('feedbackMessages', [], { persist: 'localStorage' });
+# Using npm
+npm install overwatch-ts
+
+# Using yarn
+yarn add overwatch-ts
 ```
 
-### 2. **Components use the state with hooks**
+### Step 1: `createSharedState(key, initialValue)`
+
+This function initializes a shared state value globally. While **optional**, it's helpful for establishing a default state before any component mounts.
+
+> If `createSharedState` isn't used, `useSharedState` will automatically create the key the first time it's accessed, providing a flexible starting point.
 
 ```ts
-const [user, setUser] = useSharedState<{
-  id: string;
-  name: string;
-  isAnonymous: boolean;
-  avatar: string;
-}>('user');
-const [feedbackMessages, setFeedbackMessages] =
-  useSharedState<FeedbackMessage[]>('feedbackMessages');
+// Setting an initial theme
+createSharedState('theme', { mode: 'dark' });
 ```
 
-### 3. **State is shared, reactive, and persistent**
+### Step 2: `useSharedState(key)`
 
-- Any component can read/write the state.
-- Changes are instantly reflected everywhere.
-- State is saved in localStorage, so it survives reloads.
-
-### 4. **Pub/Sub and Events**
-
-- Overwatch TS supports custom events and middleware (not shown in this demo, but easy to add!).
-
----
-
-## Getting Started
-
-1. **Clone the repo:**
-   ```sh
-   git clone <your-fork-url>
-   cd overwatch
-   ```
-2. **Install dependencies:**
-   ```sh
-   npm install
-   ```
-3. **Run the app:**
-   ```sh
-   npm run dev
-   ```
-4. **Open in your browser:**
-   [http://localhost:5173](http://localhost:5173)
-
----
-
-## Project Structure
-
-```
-overwatch/
-├── src/
-│   ├── FeedbackWall.tsx      # Main wall UI & logic (annotated)
-│   ├── FeedbackInput.tsx     # Input for new messages
-│   ├── NameModal.tsx         # Modal for user name/anonymous
-│   ├── core-utils/           # Overwatch TS core logic
-│   ├── Hooks/                # Custom hooks for Overwatch TS
-│   └── ...
-├── public/
-│   └── ...
-├── package.json
-└── README.md
-```
-
----
-
-## Key Concepts & Code Walkthrough
-
-### 1. **Global State Setup**
+> Use this hook in any component to **read** and **update** your shared state. It's your primary interface for interacting with OverWatch.
 
 ```ts
-// FeedbackWall.tsx (top)
-createSharedState(
-  'user',
-  { id: '', name: '', isAnonymous: false, avatar: '' },
-  { persist: 'localStorage' }
-);
-createSharedState('feedbackMessages', [], { persist: 'localStorage' });
-```
+import { useSharedState } from 'overwatch-ts'; 
 
-### 2. **Using State in Components**
+const ThemeSwitcher = () => {
+  const [theme, setTheme] = useSharedState<{ mode: string }>('theme');
 
-```ts
-const [user, setUser] = useSharedState<{
-  id: string;
-  name: string;
-  isAnonymous: boolean;
-  avatar: string;
-}>('user');
-const [feedbackMessages, setFeedbackMessages] =
-  useSharedState<FeedbackMessage[]>('feedbackMessages');
-```
+  const toggleTheme = () => {
+    setTheme({ mode: theme.mode === 'dark' ? 'light' : 'dark' });
+  };
 
-### 3. **Adding a Message**
-
-```ts
-const handleSubmit = (message: string) => {
-  if (!userMessage) {
-    setFeedbackMessages([
-      ...feedbackMessages,
-      {
-        userId: user.id,
-        userName: user.isAnonymous ? 'Anonymous' : user.name,
-        message,
-        timestamp: Date.now(),
-        avatar: user.avatar,
-      },
-    ]);
-  }
-};
-```
-
-### 4. **Editing/Deleting a Message**
-
-```ts
-const handleEditSave = (msg: FeedbackMessage) => {
-  setFeedbackMessages(
-    feedbackMessages.map((m) =>
-      m.userId === msg.userId
-        ? { ...m, message: editValue, timestamp: Date.now() }
-        : m
-    )
+  return (
+    <button onClick={toggleTheme}>
+      Switch to {theme.mode === 'dark' ? 'Light' : 'Dark'} Mode
+    </button>
   );
 };
-const handleDelete = (msg: FeedbackMessage) => {
-  setFeedbackMessages(feedbackMessages.filter((m) => m.userId !== msg.userId));
+```
+
+### Step 3: `usePicker(key, selectorFn)`
+
+> This hook allows you to extract only a specific part of a shared state object, which can help optimize component rendering by preventing unnecessary re-renders.
+
+```ts
+import { usePicker } from 'overwatch-ts'; 
+
+const ThemeIndicator = () => {
+  const mode = usePicker('theme', t => t.mode);
+
+  return <div>{mode === 'dark' ? '🌑' : '☀️'}</div>;
+};
+```
+**Why and when to use?**
+
+* It helps prevent unnecessary re-renders, improving application performance.
+* It's particularly useful for larger state objects where you only need to react to changes in one specific field.
+
+### Step 4: `applyMiddleware(key, middlewareFn)`
+
+> Use this to attach one or more **global middlewares** to a shared state key. These middlewares will apply to all updates for that specific state key.
+
+```ts
+import { applyMiddleware, createSharedState } from 'overwatch-ts'; 
+
+// A simple logger for all 'theme' state changes
+const globalThemeLogger = (newValue, next) => {
+  console.log('Global Theme Change:', newValue);
+  next(newValue); // Remember to call 'next' to continue the update
+};
+
+createSharedState('theme', { mode: 'dark' });
+applyMiddleware('theme', globalThemeLogger);
+```
+(*NOTE*: If both instance-specific and global middlewares are applied to the same state, instance-specific middlewares will run first.)
+
+### Step 5: Instance-specific Middleware (Component Level)
+
+> If you need middleware to apply only within a specific component, you can pass it directly when using `useSharedState`.
+
+```ts
+import { useSharedState } from 'overwatch-ts'; 
+
+const MyComponentWithLocalLogging = () => {
+  const localLogger = (val, next) => {
+    console.log('This runs only in this specific component:', val);
+    next(val);
+  };
+
+  const [theme, setTheme] = useSharedState('theme', {
+    middleware: [localLogger],
+  });
+
+  // ...rest of your component
 };
 ```
 
-### 5. **Comic UI & User Experience**
+---
 
-- Comic font, colors, and playful avatars.
-- Each message is a speech bubble.
-- Edit/Delete only for your own message.
-- Modal for name/anonymous selection.
+## Component Communication: Beyond State Management
+
+### Step 6: `useBroadcast` and `useEvent`
+
+> These hooks are designed for one-time communications, such as triggering a logout action, showing a modal, or sending a specific notification across your application. While distinct from state management, they integrate seamlessly for a comprehensive communication solution.
+
+**Broadcast an event:**
+
+```ts
+import { useBroadcast } from 'overwatch-ts'; 
+
+const LogoutButton = () => {
+  const broadcast = useBroadcast();
+
+  const handleLogout = () => {
+    // Perform logout logic...
+    broadcast('LOGOUT'); // Emit the 'LOGOUT' event
+  };
+
+  return <button onClick={handleLogout}>Logout</button>;
+};
+```
+
+**Listen for an event:**
+
+```ts
+import { useEvent } from 'overwatch-ts'; 
+import { useNavigate } from 'react-router-dom'; // Example for React Router
+
+const AuthListener = () => {
+  const navigate = useNavigate();
+
+  useEvent('LOGOUT', () => {
+    console.log('Logout event received. Redirecting...');
+    navigate('/login');
+  });
+
+  return null; // This component primarily serves as a listener
+};
+```
+
+### What is Component Communication?
+
+In many applications, especially those with deep component trees or when React Context feels too rigid, there's a need for **cross-component communication** that's both decoupled and clear. OverWatch's event system addresses this by:
+
+* Offering a **central event bus** built on the pub-sub model.
+* Leveraging **custom React hooks** for subscribing to and publishing events.
+* **Automatically unsubscribing** events when components unmount, preventing memory leaks.
+* Tracking **which component** subscribed to which event for better debugging.
+* Being fully written in **TypeScript** and easily tree-shakable for efficient bundling.
 
 ---
 
-## How to Contribute
+## Ideal Use Cases: Where OverWatch Excels
 
-We welcome all contributors! 🚀
-
-- **Fork this repo** and make your changes.
-- **Add comments** and keep the code friendly for beginners.
-- **Open a pull request** with a clear description.
-- **Ask questions** or suggest improvements in Issues.
-
-### Contribution Ideas
-
-- Add more comic/gamified effects.
-- Add Overwatch TS event/middleware examples.
-- Add tests or more docs.
-- Improve accessibility or mobile UI.
+* Decoupled communication between unrelated components.
+* Managing temporary global states (e.g., flash messages, user actions).
+* Providing an alternative to prop drilling or over-reliance on React Context.
 
 ---
 
-## FAQ
+## ✨Server-Side Rendering (SSR) Support
 
-**Q: What is Overwatch TS?**
-A: A minimal, TypeScript-first state management library for React/Next.js. See [docs](https://docs.overwatchts.in/docs).
+Overwatch supports SSR (Server Side Rendering) via a dedicated `ServerStore` interface, giving you full control over how shared state is created, serialized, and hydrated across the client-server boundary.
 
-**Q: How is state shared?**
-A: State is global, singleton, and reactive. Any component can use it.
+How to use (**✨Easy!**)
+* On the server, create a new store instance using createServerStore().
+* Set and read state via that store during rendering.
+* On the client, hydrate the store using Hyrated wrapper before your app renders.
 
-**Q: How is state persisted?**
-A: Use the `persist` option in `createSharedState` to save to localStorage/sessionStorage.
-
-**Q: Can I use events/middleware?**
-A: Yes! See the [Overwatch TS docs](https://docs.overwatchts.in/docs) for advanced usage.
-
-**Q: Where is the avatar from?**
-A: [Overwatch Avatar PNG](https://github.com/WisdomBits/overwatch-Introduction/blob/main/src/assets/overwatchAvatar.png)
+> That's it 3 steps
 
 ---
 
-## Resources
+### 🧩 The ServerStore Interface
 
-- [Overwatch TS Docs](https://docs.overwatchts.in/docs)
-- [Overwatch Avatar PNG](https://github.com/WisdomBits/overwatch-Introduction/blob/main/src/assets/overwatchAvatar.png)
-- [Zustand (inspiration)](https://zustand-demo.pmnd.rs/)
+Use `createServerStore()` to get a per-request store instance:
 
----
+```ts
+const serverStore = createServerStore();
+```
 
-## Screenshots / Demo
-
-> _Add screenshots or a GIF here to show the comic UI and Overwatch TS in action!_
+Use `serverStore.getSnapshot()` to pass it to the client, and `serverStore.hydrate()` or `useHydratedStore` on the client to Hydrate client-side stores with no flickering.
 
 ---
 
-## License
+### 🧪 Example 1 – SSR in React (Node Server)
 
-MIT
+```tsx
+// Server: Express/Node
+import { createServerStore } from 'overwatch-ts';
+
+const serverStore = createServerStore();
+serverStore.set('theme', 'dark'); // Inject initial state
+
+const app = renderToString(
+  <App store={serverStore} />
+);
+
+// Send snapshot to client
+const initialState = serverStore.getSnapshot();
+res.send(`
+  <script>window.__OVERWATCH_SNAPSHOT__ = ${JSON.stringify(initialState)}</script>
+`);
+```
+
+```tsx
+// Client: Hydrate snapshot
+import { useHydratedStore } from 'overwatch-ts';
+
+if (typeof window !== 'undefined' && window.__OVERWATCH_SNAPSHOT__) {
+  useHydratedStore(window.__OVERWATCH_SNAPSHOT__);
+}
+```
+
+---
+
+### ⚡ Example 2 – With Next.js (App Router)
+
+```tsx  file=overwatchStore.js
+'use client'
+
+import { createServerStore } from 'overwatch-ts';
+
+export const serverStore = createServerStore();
+```
+
+```tsx file=app/page.tsx
+import { Hydrated } from 'overwatch-ts';
+export async function getServerSideProps() {
+  // Set some state server-side
+
+  serverStore.set('theme', { mode: 'dark' });
+
+  return {
+    props: {
+      initialSnapshot: serverStore.getSnapshot(),
+    },
+  };
+}
+
+export default function Home({ initialSnapshot }) {
+  return (
+    // Wrapper that renders children only after client is fully hydrated
+     <Hydrated snapshot={initialSnapshot}>
+      <ToogleTheme /> // client *components
+    </Hydrated>
+  );
+}
+```
+On the client
+```tsx file=ToogleTheme.js
+"use client"
+export const ToogleTheme = () => {
+  const [theme, setTheme] = useSharedState('theme');
+  return (<>
+    <h1>{theme.mode}</h1>
+  </>)
+}
+```
+
+---
+
+### ✅ Summary
+
+* Use `createServerStore()` to create scoped state per request.
+* Populate initial state using `createSharedState(...)`.
+* Use `store.getSnapshot()` and pass it to the client.
+* Hydrate on the client using `Hydrated` wrapper before using hooks.
+* All hooks internally default to the global store unless a `store` is passed manually. (Not Recommended, only for advance use cases)
+
+---
+## 📜 License
+
+MIT — feel free to fork and adapt OverWatch for your projects.
+
+---
+
+**Built with purpose, and reusability in mind.**
+# Overwatch — A Lightweight Sensible State Manager
+![Alt text](https://ucarecdn.com/e22cf47b-ada8-420a-8345-745c2e3c53e9/overwatch1.png "overwatch")
+[![Build Size](https://img.shields.io/bundlephobia/minzip/overwatch-ts?label=bundle%20size&style=flat&colorA=000000&colorB=000000)](https://bundlephobia.com/result?p=overwatch-ts)
+[![Version](https://img.shields.io/npm/v/overwatch-ts?style=flat&colorA=000000&colorB=000000)](https://www.npmjs.com/package/overwatch-ts)
+
+> ### 🚀 What’s New?
+> Overwatch now supports Server-Side Rendering **SSR**  (v 1.0.7)
+---
+
+A minimal API with developer flexibility, TypeScript-first state-management solution, inspired by the simplicity of **Zustand**, It's a super lightweight yet expressive **state management library for React Js & Next Js**, built on the **singleton design pattern**. It offers support for **global and instance-specific middlewares**, **immutability**, **batched updates**, and **custom event communication** — all designed to be used without extensive boilerplate.
+
+Goal with OverWatch was to prioritize reusability, a positive developer experience, and clear component-level state and event tracking.
+
+
+Read the full documentation at [overwatchts.in/docs](https://overwatchts.in/docs).
+
+---
+
+## 🚀 What Is OverWatch?
+
+> OverWatch evolved from an internal utility that leveraged the singleton and pub-sub patterns. We've now refined it for React, incorporating hooks, strong typing, and automatic cleanup to make it accessible to everyone.
+
+OverWatch is:
+
+* Built with **React hooks and TypeScript** (offering 100% type safety for predictable development).
+* **Lightweight** — you won't find context providers, reducers, or dispatches here.
+* Ideal for managing both **component-level and application-level shared state**, providing flexibility for various needs.
+* **Inspired by Zustand**: builds upon the simplicity and performance-first design of Zustand but reimagines it with a focus on advanced middleware, event-driven architecture, immutable state enforcement, and without the need for central store boilerplate.
+
+
+---
+## Why This Exists: State management should be straightforward & Sensible
+
+If you've ever felt that Redux was too comprehensive for your needs, or that libraries like Zustand didn't offer enough specific control, OverWatch aims to provide a balanced approach. It combines a **minimal API** with **flexibility** to enhance your developer experience.
+
+---
+
+## Architecture: How It Works
+
+At its core, OverWatch uses a **pub-sub pattern** to manage state effectively:
+
+* Every **state key** functions as a communication **channel**.
+* Components can **subscribe** to updates on these channels, acting as listeners.
+* You can **publish changes** to state, either globally or specifically.
+* **Middleware pipelines** run before changes are published, allowing for custom logic.
+* **Batching** ensures that multiple updates are grouped efficiently, optimizing performance.
+* **Immutability** is maintained, helping your state remain consistent and easy to reason about.
+
+---
+
+## How to Use: Getting Started
+
+### Installation
+To get started with OverWatch-TS, simply install it using npm or yarn:
+
+```ts
+# Using npm
+npm install overwatch-ts
+
+# Using yarn
+yarn add overwatch-ts
+```
+
+### Step 1: `createSharedState(key, initialValue)`
+
+This function initializes a shared state value globally. While **optional**, it's helpful for establishing a default state before any component mounts.
+
+> If `createSharedState` isn't used, `useSharedState` will automatically create the key the first time it's accessed, providing a flexible starting point.
+
+```ts
+// Setting an initial theme
+createSharedState('theme', { mode: 'dark' });
+```
+
+### Step 2: `useSharedState(key)`
+
+> Use this hook in any component to **read** and **update** your shared state. It's your primary interface for interacting with OverWatch.
+
+```ts
+import { useSharedState } from 'overwatch-ts'; 
+
+const ThemeSwitcher = () => {
+  const [theme, setTheme] = useSharedState<{ mode: string }>('theme');
+
+  const toggleTheme = () => {
+    setTheme({ mode: theme.mode === 'dark' ? 'light' : 'dark' });
+  };
+
+  return (
+    <button onClick={toggleTheme}>
+      Switch to {theme.mode === 'dark' ? 'Light' : 'Dark'} Mode
+    </button>
+  );
+};
+```
+
+### Step 3: `usePicker(key, selectorFn)`
+
+> This hook allows you to extract only a specific part of a shared state object, which can help optimize component rendering by preventing unnecessary re-renders.
+
+```ts
+import { usePicker } from 'overwatch-ts'; 
+
+const ThemeIndicator = () => {
+  const mode = usePicker('theme', t => t.mode);
+
+  return <div>{mode === 'dark' ? '🌑' : '☀️'}</div>;
+};
+```
+**Why and when to use?**
+
+* It helps prevent unnecessary re-renders, improving application performance.
+* It's particularly useful for larger state objects where you only need to react to changes in one specific field.
+
+### Step 4: `applyMiddleware(key, middlewareFn)`
+
+> Use this to attach one or more **global middlewares** to a shared state key. These middlewares will apply to all updates for that specific state key.
+
+```ts
+import { applyMiddleware, createSharedState } from 'overwatch-ts'; 
+
+// A simple logger for all 'theme' state changes
+const globalThemeLogger = (newValue, next) => {
+  console.log('Global Theme Change:', newValue);
+  next(newValue); // Remember to call 'next' to continue the update
+};
+
+createSharedState('theme', { mode: 'dark' });
+applyMiddleware('theme', globalThemeLogger);
+```
+(*NOTE*: If both instance-specific and global middlewares are applied to the same state, instance-specific middlewares will run first.)
+
+### Step 5: Instance-specific Middleware (Component Level)
+
+> If you need middleware to apply only within a specific component, you can pass it directly when using `useSharedState`.
+
+```ts
+import { useSharedState } from 'overwatch-ts'; 
+
+const MyComponentWithLocalLogging = () => {
+  const localLogger = (val, next) => {
+    console.log('This runs only in this specific component:', val);
+    next(val);
+  };
+
+  const [theme, setTheme] = useSharedState('theme', {
+    middleware: [localLogger],
+  });
+
+  // ...rest of your component
+};
+```
+
+---
+
+## Component Communication: Beyond State Management
+
+### Step 6: `useBroadcast` and `useEvent`
+
+> These hooks are designed for one-time communications, such as triggering a logout action, showing a modal, or sending a specific notification across your application. While distinct from state management, they integrate seamlessly for a comprehensive communication solution.
+
+**Broadcast an event:**
+
+```ts
+import { useBroadcast } from 'overwatch-ts'; 
+
+const LogoutButton = () => {
+  const broadcast = useBroadcast();
+
+  const handleLogout = () => {
+    // Perform logout logic...
+    broadcast('LOGOUT'); // Emit the 'LOGOUT' event
+  };
+
+  return <button onClick={handleLogout}>Logout</button>;
+};
+```
+
+**Listen for an event:**
+
+```ts
+import { useEvent } from 'overwatch-ts'; 
+import { useNavigate } from 'react-router-dom'; // Example for React Router
+
+const AuthListener = () => {
+  const navigate = useNavigate();
+
+  useEvent('LOGOUT', () => {
+    console.log('Logout event received. Redirecting...');
+    navigate('/login');
+  });
+
+  return null; // This component primarily serves as a listener
+};
+```
+
+### What is Component Communication?
+
+In many applications, especially those with deep component trees or when React Context feels too rigid, there's a need for **cross-component communication** that's both decoupled and clear. OverWatch's event system addresses this by:
+
+* Offering a **central event bus** built on the pub-sub model.
+* Leveraging **custom React hooks** for subscribing to and publishing events.
+* **Automatically unsubscribing** events when components unmount, preventing memory leaks.
+* Tracking **which component** subscribed to which event for better debugging.
+* Being fully written in **TypeScript** and easily tree-shakable for efficient bundling.
+
+---
+
+## Ideal Use Cases: Where OverWatch Excels
+
+* Decoupled communication between unrelated components.
+* Managing temporary global states (e.g., flash messages, user actions).
+* Providing an alternative to prop drilling or over-reliance on React Context.
+
+---
+
+## ✨Server-Side Rendering (SSR) Support
+
+Overwatch supports SSR (Server Side Rendering) via a dedicated `ServerStore` interface, giving you full control over how shared state is created, serialized, and hydrated across the client-server boundary.
+
+How to use (**✨Easy!**)
+* On the server, create a new store instance using createServerStore().
+* Set and read state via that store during rendering.
+* On the client, hydrate the store using Hyrated wrapper before your app renders.
+
+> That's it 3 steps
+
+---
+
+### 🧩 The ServerStore Interface
+
+Use `createServerStore()` to get a per-request store instance:
+
+```ts
+const serverStore = createServerStore();
+```
+
+Use `serverStore.getSnapshot()` to pass it to the client, and `serverStore.hydrate()` or `useHydratedStore` on the client to Hydrate client-side stores with no flickering.
+
+---
+
+### 🧪 Example 1 – SSR in React (Node Server)
+
+```tsx
+// Server: Express/Node
+import { createServerStore } from 'overwatch-ts';
+
+const serverStore = createServerStore();
+serverStore.set('theme', 'dark'); // Inject initial state
+
+const app = renderToString(
+  <App store={serverStore} />
+);
+
+// Send snapshot to client
+const initialState = serverStore.getSnapshot();
+res.send(`
+  <script>window.__OVERWATCH_SNAPSHOT__ = ${JSON.stringify(initialState)}</script>
+`);
+```
+
+```tsx
+// Client: Hydrate snapshot
+import { useHydratedStore } from 'overwatch-ts';
+
+if (typeof window !== 'undefined' && window.__OVERWATCH_SNAPSHOT__) {
+  useHydratedStore(window.__OVERWATCH_SNAPSHOT__);
+}
+```
+
+---
+
+### ⚡ Example 2 – With Next.js (App Router)
+
+```tsx  file=overwatchStore.js
+'use client'
+
+import { createServerStore } from 'overwatch-ts';
+
+export const serverStore = createServerStore();
+```
+
+```tsx file=app/page.tsx
+import { Hydrated } from 'overwatch-ts';
+export async function getServerSideProps() {
+  // Set some state server-side
+
+  serverStore.set('theme', { mode: 'dark' });
+
+  return {
+    props: {
+      initialSnapshot: serverStore.getSnapshot(),
+    },
+  };
+}
+
+export default function Home({ initialSnapshot }) {
+  return (
+    // Wrapper that renders children only after client is fully hydrated
+     <Hydrated snapshot={initialSnapshot}>
+      <ToogleTheme /> // client *components
+    </Hydrated>
+  );
+}
+```
+On the client
+```tsx file=ToogleTheme.js
+"use client"
+export const ToogleTheme = () => {
+  const [theme, setTheme] = useSharedState('theme');
+  return (<>
+    <h1>{theme.mode}</h1>
+  </>)
+}
+```
+
+---
+
+### ✅ Summary
+
+* Use `createServerStore()` to create scoped state per request.
+* Populate initial state using `createSharedState(...)`.
+* Use `store.getSnapshot()` and pass it to the client.
+* Hydrate on the client using `Hydrated` wrapper before using hooks.
+* All hooks internally default to the global store unless a `store` is passed manually. (Not Recommended, only for advance use cases)
+
+---
+## 📜 License
+
+MIT — feel free to fork and adapt OverWatch for your projects.
+
+---
+
+**Built with purpose, and reusability in mind.**

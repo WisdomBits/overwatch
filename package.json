@@ -61,8 +61,5 @@
   "bugs": {
     "url": "https://github.com/WisdomBits/overwatch/issues"
   },
-  "homepage": "https://github.com/WisdomBits/overwatch#readme",
-  "dependencies": {
-    "overwatch-ts": "^1.0.7"
-  }
+  "homepage": "https://github.com/WisdomBits/overwatch#readme"
 }
