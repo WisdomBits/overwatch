@@ -32,6 +32,7 @@ const FeedbackWall: React.FC = () => {
   // Local UI state for editing messages
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState('');
+  const [nameError, setNameError] = useState<string | null>(null);
 
   // On first mount, ensure the user has a unique ID (persisted)
   useEffect(() => {
@@ -46,20 +47,18 @@ const FeedbackWall: React.FC = () => {
 
   // ---
   // Handle new message submission
-  // Only allow one message per user
+  // Remove the restriction: allow multiple messages per user
   const handleSubmit = (message: string) => {
-    if (!userMessage) {
-      setFeedbackMessages([
-        ...feedbackMessages,
-        {
-          userId: user.id,
-          userName: user.isAnonymous ? 'Anonymous' : user.name,
-          message,
-          timestamp: Date.now(),
-          avatar: user.avatar,
-        },
-      ]);
-    }
+    setFeedbackMessages([
+      ...feedbackMessages,
+      {
+        userId: user.id,
+        userName: user.isAnonymous ? 'Anonymous' : user.name,
+        message,
+        timestamp: Date.now(),
+        avatar: user.avatar,
+      },
+    ]);
   };
 
   // ---
@@ -95,12 +94,23 @@ const FeedbackWall: React.FC = () => {
     return (
       <NameModal
         onSubmit={({ name, isAnonymous }) => {
+          // Check if name is already taken (case-insensitive, except for Anonymous)
+          const nameTaken = feedbackMessages.some(
+            (msg: any) =>
+              msg.userName.toLowerCase() === name.trim().toLowerCase() &&
+              name.trim().toLowerCase() !== 'anonymous'
+          );
+          if (nameTaken) {
+            setNameError('This name is already taken. Please choose a different one.');
+            return;
+          }
           setUser({
             ...user,
             name,
             isAnonymous,
             id: user.id || generateUUID(),
           });
+          setNameError(null);
         }}
       />
     );
@@ -120,17 +130,7 @@ const FeedbackWall: React.FC = () => {
       <p className="comic-welcome">
         Welcome, <b>{user.isAnonymous ? 'Anonymous' : user.name}</b>! Leave your mark below 💬
       </p>
-      {/* Show thank you if user already posted, else show input */}
-      {userMessage ? (
-        <div style={{ margin: '2rem 0', color: '#27ae60', fontWeight: 600 }}>
-          Thank you for your feedback!<br />
-          <span style={{ fontStyle: 'italic', color: '#555' }}>
-            "{userMessage.message}"
-          </span>
-        </div>
-      ) : (
-        <FeedbackInput onSubmit={handleSubmit} disabled={!!userMessage} />
-      )}
+      <FeedbackInput onSubmit={handleSubmit} />
       {/* Public wall: all messages, comic bubbles */}
       <div style={{ marginTop: 40, textAlign: 'left', maxWidth: 520, marginLeft: 'auto', marginRight: 'auto' }}>
         <h3 style={{ borderBottom: '1px solid #eee', paddingBottom: 8, marginBottom: 16 }}>Public Wall</h3>
@@ -138,10 +138,10 @@ const FeedbackWall: React.FC = () => {
           <div style={{ color: '#aaa', textAlign: 'center' }}>No messages yet. Be the first to leave feedback!</div>
         ) : (
           <ul className="comic-bubble-list">
-            {feedbackMessages.slice().reverse().map((msg: any) => {
+            {feedbackMessages.slice().reverse().map((msg: any, idx: number) => {
               const isOwner = msg.userId === user.id;
               return (
-                <li key={msg.userId} className="comic-bubble">
+                <li key={msg.userId + '-' + msg.timestamp + '-' + idx} className="comic-bubble">
                   {/* Author and time */}
                   <div className="comic-author">
                     {msg.userName || 'Anonymous'}
@@ -152,7 +152,7 @@ const FeedbackWall: React.FC = () => {
                   {/* Avatar (emoji or custom) */}
                   <div className="comic-avatar">{msg.avatar || '🦸‍♂️'}</div>
                   {/* Message bubble: edit mode or display mode */}
-                  {editingId === msg.userId ? (
+                  {editingId === msg.userId && editingId + msg.timestamp === msg.userId + msg.timestamp ? (
                     <div>
                       <textarea
                         value={editValue}

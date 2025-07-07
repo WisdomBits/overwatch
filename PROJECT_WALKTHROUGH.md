@@ -37,6 +37,8 @@ createSharedState('feedbackMessages', [], { persist: 'localStorage' });
 ### 2. **Using State in Components**
 
 ```ts
+import { useSharedState } from 'overwatch-ts';
+
 const [user, setUser] = useSharedState<{
   id: string;
   name: string;
