@@ -17,18 +17,23 @@ export function usePicker<T, S>(
   const [selected, setSelected] = useState(() => selector(getSharedState<T>(key, store)));
   const latestSelected = useRef(selected);
 
-  useEffect(() => {
-    const update = (newValue: T) => {
-      const nextSelected = selector(newValue);
-      if (!equalityFn(latestSelected.current, nextSelected)) {
-        latestSelected.current = nextSelected;
-        setSelected(nextSelected);
-      }
-    };
+useEffect(() => {
+  const update = (selectedSlice: S) => {
+    latestSelected.current = selectedSlice;
+    setSelected(selectedSlice);
+  };
 
-    pubsub.subscribe<T>(key, update);
-    return () => pubsub.unsubscribe<T>(key, update);
-  }, [key, selector, equalityFn]);
+  pubsub.subscribe<T, S>(
+    key,
+    update,
+    equalityFn,
+    getSharedState<T>(key, store),
+    selector
+    //component name
+  );
+
+  return () => pubsub.unsubscribe<T, S>(key, update);
+}, [key, selector, equalityFn]);
 
   return selected;
 }
