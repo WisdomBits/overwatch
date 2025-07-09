@@ -1,8 +1,6 @@
-# Overwatch TS Comic Guestbook / Feedback Wall
+# Overwatch TS  Overwatch Thoughts
 
-![Overwatch TS Comic Banner](https://github.com/WisdomBits/overwatch-Introduction/blob/main/src/assets/overwatchAvatar.png?raw=true)
-
----
+A starter application to understand how Overwatch basic APIs work and start contributing.
 
 ## Table of Contents
 
@@ -20,9 +18,9 @@
 
 ## What is this project?
 
-A **comic-style, public feedback wall** where users can leave a short message (like a digital guestbook). Each user can submit, edit, or delete one message. All messages are public and visible to everyone.
+A public feedback wall** where users can leave a short message (like a digital guestbook). Each user can submit, edit, or delete one message. All messages are public and visible to everyone.
 
-- 🦸‍♂️ **Comic UI**: Playful, bold, and fun!
+- 🦸‍♂️ **Bold UI**: Playful, bold, and fun!
 - 📝 **One message per user**: Edit or delete your own.
 - 🌍 **Public wall**: See everyone's feedback in real time.
 - ⚡️ **Powered by [Overwatch TS](https://docs.overwatchts.in/docs)**: A modern, minimal, and powerful state management library for React/Next.js.
@@ -39,13 +37,6 @@ A **comic-style, public feedback wall** where users can leave a short message (l
 - **Event-driven**: Custom events and pub/sub built in.
 - **Persistence**: Easily persist state to localStorage/sessionStorage.
 - **Inspired by Zustand, but with more power and less fuss!**
-
-**Why not Redux, Context, or Zustand?**
-
-- No verbose setup or context trees.
-- No need for reducers or actions.
-- No prop drilling or context re-renders.
-- Just simple, direct, and type-safe state.
 
 ---
 
@@ -80,11 +71,7 @@ const [feedbackMessages, setFeedbackMessages] =
 
 - Any component can read/write the state.
 - Changes are instantly reflected everywhere.
-- State is saved in localStorage, so it survives reloads.
-
-### 4. **Pub/Sub and Events**
-
-- Overwatch TS supports custom events and middleware (not shown in this demo, but easy to add!).
+- State is saved in localStorage, so it persists on reloads.
 
 ---
 
@@ -92,7 +79,7 @@ const [feedbackMessages, setFeedbackMessages] =
 
 1. **Clone the repo:**
    ```sh
-   git clone <your-fork-url>
+   git clone https://github.com/WisdomBits/overwatch.git
    cd overwatch
    ```
 2. **Install dependencies:**
@@ -154,6 +141,8 @@ const [feedbackMessages, setFeedbackMessages] =
   useSharedState<FeedbackMessage[]>('feedbackMessages');
 ```
 
+*NOTE:* It is recommended by overwatch to use **usePicker**, if utilising to fetch states values only.
+
 ### 3. **Adding a Message**
 
 ```ts
@@ -189,14 +178,6 @@ const handleDelete = (msg: FeedbackMessage) => {
   setFeedbackMessages(feedbackMessages.filter((m) => m.userId !== msg.userId));
 };
 ```
-
-### 5. **Comic UI & User Experience**
-
-- Comic font, colors, and playful avatars.
-- Each message is a speech bubble.
-- Edit/Delete only for your own message.
-- Modal for name/anonymous selection.
-
 ---
 
 ## How to Contribute
@@ -210,46 +191,14 @@ We welcome all contributors! 🚀
 
 ### Contribution Ideas
 
-- Add more comic/gamified effects.
+- update UI.
 - Add Overwatch TS event/middleware examples.
 - Add tests or more docs.
 - Improve accessibility or mobile UI.
-
----
-
-## FAQ
-
-**Q: What is Overwatch TS?**
-A: A minimal, TypeScript-first state management library for React/Next.js. See [docs](https://docs.overwatchts.in/docs).
-
-**Q: How is state shared?**
-A: State is global, singleton, and reactive. Any component can use it.
-
-**Q: How is state persisted?**
-A: Use the `persist` option in `createSharedState` to save to localStorage/sessionStorage.
-
-**Q: Can I use events/middleware?**
-A: Yes! See the [Overwatch TS docs](https://docs.overwatchts.in/docs) for advanced usage.
-
-**Q: Where is the avatar from?**
-A: [Overwatch Avatar PNG](https://github.com/WisdomBits/overwatch-Introduction/blob/main/src/assets/overwatchAvatar.png)
-
 ---
 
 ## Resources
 
 - [Overwatch TS Docs](https://docs.overwatchts.in/docs)
-- [Overwatch Avatar PNG](https://github.com/WisdomBits/overwatch-Introduction/blob/main/src/assets/overwatchAvatar.png)
-- [Zustand (inspiration)](https://zustand-demo.pmnd.rs/)
 
 ---
-
-## Screenshots / Demo
-
-> _Add screenshots or a GIF here to show the comic UI and Overwatch TS in action!_
-
----
-
-## License
-
-MIT
