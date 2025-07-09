@@ -10,8 +10,16 @@ export default defineConfig({
       entryRoot: 'src',
       insertTypesEntry: true,
       outDir: 'dist/types',
+      exclude: [
+        'src/App.tsx',        
+        'src/main.tsx',  
+        'src/FeedbackInput.tsx',  
+        'src/FeedbackWall.tsx',  
+        'src/NameModal.tsx',  
+        'src/utils.ts'
+      ],
     }),
-    addUseClientOnlyToClientFiles(),
+    addUseClientOnlyToClientFiles()
   ],
   build: {
     lib: {

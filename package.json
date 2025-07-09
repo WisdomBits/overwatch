@@ -34,7 +34,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "release": "npm version patch && npm run build && npm publish"
   },
   "peerDependencies": {
     "react": "^19.1.0",
