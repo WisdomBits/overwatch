@@ -4,33 +4,34 @@ import { useSharedState } from './Hooks/useSharedState';
 import { generateUUID } from './utils';
 import FeedbackInput from './FeedbackInput';
 import './FeedbackWall.css';
-import { createSharedState } from './core-utils/sharedState';
 
-// ---
-// Overwatch TS: Set up global, persistent state for user and feedback messages
-// This makes state available everywhere, and persists it in localStorage
-createSharedState('user', { id: '', name: '', isAnonymous: false, avatar: '' }, { persist: 'localStorage' });
-createSharedState('feedbackMessages', [], { persist: 'localStorage' });
-// ---
+type UserState = {
+  id: string;
+  name: string;
+  isAnonymous: boolean;
+  avatar: string;
+};
+
+type FeedbackMessage = {
+  userId: string;
+  userName: string;
+  message: string;
+  timestamp: number;
+  avatar?: string;
+};
 
 const FeedbackWall: React.FC = () => {
   // ---
   // Use Overwatch TS to access and update the current user
   // This hook gives you [state, setState] for the global 'user' key
-  const [user, setUser] = useSharedState<{ id: string; name: string; isAnonymous: boolean; avatar: string }>('user');
+  const [user, setUser] = useSharedState<UserState>('user');
 
   // Use Overwatch TS to access and update the global feedback messages array
-  const [feedbackMessages, setFeedbackMessages] = useSharedState<Array<{
-    userId: string;
-    userName: string;
-    message: string;
-    timestamp: number;
-    avatar?: string;
-  }>>('feedbackMessages');
+  const [feedbackMessages, setFeedbackMessages] = useSharedState<FeedbackMessage[]>('feedbackMessages');
   // ---
 
   // Local UI state for editing messages
-  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingMessageId, setEditingMessageId] = useState<string | null>(null); // To store userId + timestamp for unique message ID
   const [editValue, setEditValue] = useState('');
   const [nameError, setNameError] = useState<string | null>(null);
 
@@ -42,13 +43,11 @@ const FeedbackWall: React.FC = () => {
     // eslint-disable-next-line
   }, []);
 
-  // Find the current user's message (if any)
-  const userMessage = feedbackMessages.find((msg: any) => msg.userId === user.id);
-
-  // ---
   // Handle new message submission
-  // Remove the restriction: allow multiple messages per user
   const handleSubmit = (message: string) => {
+    // Generate a simple avatar initial if not anonymous, otherwise 'A'
+    const avatarInitial = user.isAnonymous ? 'A' : user.name.charAt(0).toUpperCase();
+
     setFeedbackMessages([
       ...feedbackMessages,
       {
@@ -56,39 +55,42 @@ const FeedbackWall: React.FC = () => {
         userName: user.isAnonymous ? 'Anonymous' : user.name,
         message,
         timestamp: Date.now(),
-        avatar: user.avatar,
+        avatar: avatarInitial, // Use the generated initial
       },
     ]);
   };
 
-  // ---
   // Handle editing a message (show textarea)
-  const handleEdit = (msg: any) => {
-    setEditingId(msg.userId);
+  const handleEdit = (msg: FeedbackMessage) => {
+    setEditingMessageId(msg.userId + '-' + msg.timestamp);
     setEditValue(msg.message);
   };
 
   // Save the edited message
-  const handleEditSave = (msg: any) => {
-    setFeedbackMessages(feedbackMessages.map((m: any) =>
-      m.userId === msg.userId ? { ...m, message: editValue, timestamp: Date.now() } : m
+  const handleEditSave = (originalMsg: FeedbackMessage) => { 
+    setFeedbackMessages(feedbackMessages.map((m: FeedbackMessage) => 
+      // Match by userId and original timestamp to ensure correct message is updated
+      (m.userId === originalMsg.userId && m.timestamp === originalMsg.timestamp)
+        ? { ...m, message: editValue.trim(), timestamp: Date.now() }
+        : m
     ));
-    setEditingId(null);
+    setEditingMessageId(null);
     setEditValue('');
   };
 
   // Cancel editing
   const handleEditCancel = () => {
-    setEditingId(null);
+    setEditingMessageId(null);
     setEditValue('');
   };
 
   // Delete a message (only your own)
-  const handleDelete = (msg: any) => {
-    setFeedbackMessages(feedbackMessages.filter((m: any) => m.userId !== msg.userId));
+  const handleDelete = (originalMsg: FeedbackMessage) => { 
+    setFeedbackMessages(feedbackMessages.filter((m: FeedbackMessage) => 
+      !(m.userId === originalMsg.userId && m.timestamp === originalMsg.timestamp)
+    ));
   };
 
-  // ---
   // Show the name/anonymous modal if user hasn't set a name yet
   if (!user.name) {
     return (
@@ -96,103 +98,123 @@ const FeedbackWall: React.FC = () => {
         onSubmit={({ name, isAnonymous }) => {
           // Check if name is already taken (case-insensitive, except for Anonymous)
           const nameTaken = feedbackMessages.some(
-            (msg: any) =>
-              msg.userName.toLowerCase() === name.trim().toLowerCase() &&
+            (msg: FeedbackMessage) => 
+              !isAnonymous && msg.userName.toLowerCase() === name.trim().toLowerCase() &&
               name.trim().toLowerCase() !== 'anonymous'
           );
           if (nameTaken) {
             setNameError('This name is already taken. Please choose a different one.');
             return;
           }
+          // If name is 'Anonymous' but isAnonymous is false, handle as a normal user named Anonymous
+          // This ensures that 'Anonymous' isn't treated specially if someone *chooses* that name
+          const finalIsAnonymous = name.trim().toLowerCase() === 'anonymous' ? true : isAnonymous;
+
           setUser({
             ...user,
-            name,
-            isAnonymous,
+            name: name.trim(), // Use the trimmed name
+            isAnonymous: finalIsAnonymous,
             id: user.id || generateUUID(),
+            avatar: name.trim().charAt(0).toUpperCase() // Set initial avatar immediately
           });
-          setNameError(null);
+          setNameError(null); // Clear error on successful submission
         }}
       />
     );
   }
 
-  // ---
-  // Main UI: Comic banner, input, and feedback wall
+  // Main UI: Input, and feedback wall
   return (
-    <div className="comic-wall">
-      {/* Comic-style banner */}
-      <div className="comic-banner">
-        <span role="img" aria-label="hero" className="comic-hero">🦸‍♂️</span>
-        <span className="comic-banner-text">Welcome to the Overwatch TS Guestbook!</span>
-        <span className="comic-bubble-pointer"></span>
-      </div>
-      <h2>🦸‍♂️ Feedback Wall</h2>
-      <p className="comic-welcome">
-        Welcome, <b>{user.isAnonymous ? 'Anonymous' : user.name}</b>! Leave your mark below 💬
+    <div className="feedback-container">
+      <h2>Let's Contribute</h2>
+      <p className="welcome-message">
+        Welcome, <b>{user.isAnonymous ? 'Anonymous Contributor' : user.name}</b>! Share your thoughts and insights below.
       </p>
+
+      {/* Display name error if any */}
+      {nameError && (
+        <div className="error-message" style={{ marginBottom: '1rem', textAlign: 'center' }}>
+          {nameError}
+        </div>
+      )}
+
       <FeedbackInput onSubmit={handleSubmit} />
-      {/* Public wall: all messages, comic bubbles */}
-      <div style={{ marginTop: 40, textAlign: 'left', maxWidth: 520, marginLeft: 'auto', marginRight: 'auto' }}>
-        <h3 style={{ borderBottom: '1px solid #eee', paddingBottom: 8, marginBottom: 16 }}>Public Wall</h3>
+
+      <div className="feedback-wall-section">
+        <h3>Recent Contributions</h3>
         {feedbackMessages.length === 0 ? (
-          <div style={{ color: '#aaa', textAlign: 'center' }}>No messages yet. Be the first to leave feedback!</div>
+          <div style={{ color: 'var(--color-text-light)', textAlign: 'center', marginTop: '2rem' }}>
+            No messages yet. Be the first to share your feedback!
+          </div>
         ) : (
-          <ul className="comic-bubble-list">
-            {feedbackMessages.slice().reverse().map((msg: any, idx: number) => {
+          <ul className="message-list">
+            {feedbackMessages.slice().reverse().map((msg: FeedbackMessage) => { 
               const isOwner = msg.userId === user.id;
+              const uniqueMessageId = msg.userId + '-' + msg.timestamp;
+
               return (
-                <li key={msg.userId + '-' + msg.timestamp + '-' + idx} className="comic-bubble">
-                  {/* Author and time */}
-                  <div className="comic-author">
-                    {msg.userName || 'Anonymous'}
-                    <span className="comic-time">
-                      {msg.timestamp ? new Date(msg.timestamp).toLocaleString() : ''}
-                    </span>
+                <li key={uniqueMessageId} className="message-card">
+                  <div className="message-header">
+                    <div className="message-avatar">
+                      {msg.avatar || (msg.userName ? msg.userName.charAt(0).toUpperCase() : 'A')}
+                    </div>
+                    <div className="message-info">
+                      <span className="message-author">
+                        {msg.userName || 'Anonymous'}
+                      </span>
+                      <span className="message-time">
+                        {msg.timestamp ? new Date(msg.timestamp).toLocaleString() : ''}
+                      </span>
+                    </div>
                   </div>
-                  {/* Avatar (emoji or custom) */}
-                  <div className="comic-avatar">{msg.avatar || '🦸‍♂️'}</div>
-                  {/* Message bubble: edit mode or display mode */}
-                  {editingId === msg.userId && editingId + msg.timestamp === msg.userId + msg.timestamp ? (
+
+                  {/* Message content: edit mode or display mode */}
+                  {editingMessageId === uniqueMessageId ? (
                     <div>
                       <textarea
                         value={editValue}
                         onChange={e => setEditValue(e.target.value)}
                         maxLength={280}
                         rows={3}
+                        className="edit-textarea"
                       />
-                      <div style={{ display: 'flex', gap: 8 }}>
+                      <div className="edit-actions">
                         <button
-                          className="comic-edit-save"
+                          className="modern-button button-secondary"
+                          onClick={handleEditCancel}
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          className="modern-button button-primary"
                           onClick={() => handleEditSave(msg)}
                           disabled={!editValue.trim() || editValue.length > 280}
-                        >Save</button>
-                        <button
-                          className="comic-edit-cancel"
-                          onClick={handleEditCancel}
-                        >Cancel</button>
+                        >
+                          Save Changes
+                        </button>
                       </div>
                     </div>
                   ) : (
-                    <div className="comic-message">
-                      {/* Emoji-friendly rendering */}
-                      {msg.message.split(/(\p{Emoji_Presentation}|\p{Extended_Pictographic})/gu).map((part: string, i: number) =>
-                        /\p{Emoji_Presentation}|\p{Extended_Pictographic}/u.test(part)
-                          ? <span key={i} className="comic-emoji">{part}</span>
-                          : part
-                      )}
+                    <div className="message-content">
+                      {msg.message}
                     </div>
                   )}
-                  {/* Edit/Delete only for your own message */}
-                  {isOwner && editingId !== msg.userId && (
-                    <div className="comic-actions">
+
+                  {/* Edit/Delete only for your own message, and not in edit mode */}
+                  {isOwner && editingMessageId !== uniqueMessageId && (
+                    <div className="message-actions">
                       <button
-                        className="comic-edit"
+                        className="action-button"
                         onClick={() => handleEdit(msg)}
-                      >Edit</button>
+                      >
+                        Edit
+                      </button>
                       <button
-                        className="comic-delete"
+                        className="action-button delete"
                         onClick={() => handleDelete(msg)}
-                      >Delete</button>
+                      >
+                        Delete
+                      </button>
                     </div>
                   )}
                 </li>
@@ -207,7 +229,7 @@ const FeedbackWall: React.FC = () => {
 
 // ---
 // This file is heavily commented for new contributors!
-// See README.md for a full walkthrough and more examples.
+// See Starter-README.md for a full walkthrough of this example.
 // ---
 
-export default FeedbackWall; 
+export default FeedbackWall;

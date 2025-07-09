@@ -1,41 +1,53 @@
 import React, { useState } from 'react';
+// import './FeedbackWall.css'; // Assuming this is imported in the main App or FeedbackWall component
 
 type NameModalProps = {
   onSubmit: (user: { name: string; isAnonymous: boolean }) => void;
+  // nameError is currently handled in FeedbackWall, but we can pass it down if needed for direct display here.
+  // For now, let's assume validation feedback is external or we re-integrate it.
 };
 
 const NameModal: React.FC<NameModalProps> = ({ onSubmit }) => {
   const [name, setName] = useState('');
 
+  const handleContinue = () => {
+    onSubmit({ name: name.trim(), isAnonymous: false });
+  };
+
+  const handleAnonymous = () => {
+    onSubmit({ name: 'Anonymous', isAnonymous: true });
+  };
+
   return (
-    <div style={{
-      position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
-      background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000
-    }}>
-      <div style={{ background: '#fff', padding: '2rem', borderRadius: '12px', minWidth: 320, textAlign: 'center', boxShadow: '0 2px 16px rgba(0,0,0,0.15)' }}>
-        <h2>Welcome!</h2>
-        <p>Enter your name to leave feedback, or continue as Anonymous.</p>
+    <div className="modal-overlay">
+      <div className="modal-content">
+        <h2>Welcome to the Feedback Portal</h2>
+        <p>Please enter your name to contribute, or proceed anonymously.</p>
         <input
           type="text"
-          placeholder="Your name"
+          placeholder="Your Name"
           value={name}
           onChange={e => setName(e.target.value)}
-          style={{ padding: '0.5rem', width: '80%', marginBottom: '1rem', borderRadius: 6, border: '1px solid #ccc' }}
+          className="modal-input"
         />
-        <div style={{ marginTop: 16 }}>
+        <div className="modal-buttons">
           <button
-            style={{ marginRight: 8, padding: '0.5rem 1.5rem', borderRadius: 6, border: 'none', background: '#222', color: '#fff', fontWeight: 600 }}
+            className="modern-button button-primary"
             disabled={!name.trim()}
-            onClick={() => onSubmit({ name: name.trim(), isAnonymous: false })}
-          >Continue</button>
+            onClick={handleContinue}
+          >
+            Continue
+          </button>
           <button
-            style={{ padding: '0.5rem 1.5rem', borderRadius: 6, border: 'none', background: '#bbb', color: '#222', fontWeight: 600 }}
-            onClick={() => onSubmit({ name: 'Anonymous', isAnonymous: true })}
-          >Anonymous</button>
+            className="modern-button button-secondary"
+            onClick={handleAnonymous}
+          >
+            Go Anonymous
+          </button>
         </div>
       </div>
     </div>
   );
 };
 
-export default NameModal; 
+export default NameModal;
