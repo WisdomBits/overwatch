@@ -97,20 +97,32 @@ const [feedbackMessages, setFeedbackMessages] =
 ## Project Structure
 
 ```
-overwatch/
+overwatch Ts/
 ├── src/
-│   ├── FeedbackWall.tsx      # Main wall UI & logic (annotated)
-│   ├── FeedbackInput.tsx     # Input for new messages
-│   ├── NameModal.tsx         # Modal for user name/anonymous
-│   ├── core-utils/           # Overwatch TS core logic
-│   ├── Hooks/                # Custom hooks for Overwatch TS
-│   └── ...
-├── public/
-│   └── ...
-├── package.json
-└── README.md
+│   ├── core/                    # Core Overwatch TS implementation
+│   │   ├── pubsub.ts           # Event publishing/subscribing system
+│   │   └── stateUpdateBatching.ts # Batched state updates
+│   ├── core-utils/             # Utility functions for state management
+│   │   ├── sharedState.ts      # Main state creation and management
+│   │   ├── createServerStore.ts # Server-side store implementation
+│   │   ├── persistance.ts      # localStorage/sessionStorage handling
+│   │   ├── Middleware.ts       # Middleware system for state validation
+│   │   └── Hydrated.tsx        # SSR hydration component
+│   ├── Hooks/                  # React hooks for Overwatch TS
+│   │   ├── useSharedState.tsx  # Main hook for state access
+│   │   ├── usePicker.tsx       # Selective state subscription
+│   │   ├── useBroadcast.ts     # Event broadcasting
+│   │   ├── useEvent.ts         # Event listening
+│   │   └── useHydratedStore.ts # SSR store hydration
+│   ├── App.tsx                 # Main application component
+│   ├── FeedbackWall.tsx        # Main feedback wall interface
+│   ├── FeedbackInput.tsx       # Message input component
+│   ├── NameModal.tsx           # User authentication modal
+│   └── utils.ts                # Utility functions
+├── Plugins/                    # Rollup plugins
+│   └── addDirectives.ts        # Adds "use client" directives
+└── package.json               # Project dependencies
 ```
-
 ---
 
 ## Key Concepts & Code Walkthrough
