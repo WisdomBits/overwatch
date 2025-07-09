@@ -1,6 +1,6 @@
-# Overwatch TS  Overwatch Thoughts
+# Overwatch TS Template Project Walkthrough - Watchly Thoughts 🚀
 
-A starter application to understand how Overwatch basic APIs work and start contributing.
+Welcome to the Overwatch TS template project! This is a comprehensive example that demonstrates how to build a real-time feedback wall application using Overwatch TS - a lightweight, TypeScript-first state management library for React.
 
 ## Table of Contents
 
@@ -16,14 +16,13 @@ A starter application to understand how Overwatch basic APIs work and start cont
 
 ---
 
-## What is this project?
+## Learning Path
 
-A public feedback wall** where users can leave a short message (like a digital guestbook). Each user can submit, edit, or delete one message. All messages are public and visible to everyone.
-
-- 🦸‍♂️ **Bold UI**: Playful, bold, and fun!
-- 📝 **One message per user**: Edit or delete your own.
-- 🌍 **Public wall**: See everyone's feedback in real time.
-- ⚡️ **Powered by [Overwatch TS](https://docs.overwatchts.in/docs)**: A modern, minimal, and powerful state management library for React/Next.js.
+1. **Start with `FeedbackWall.tsx`** - See how state is used in a real component
+2. **Explore `useSharedState.tsx`** - Understand the React hook implementation
+3. **Check `sharedState.ts`** - Learn the core state management logic
+4. **Review `pubsub.ts`** - Understand the communication system
+5. **Experiment with the UI** - Try adding messages, editing, switching modes
 
 ---
 
