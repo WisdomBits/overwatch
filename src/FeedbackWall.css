@@ -1,140 +1,508 @@
-@import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-.comic-wall {
-  font-family: 'Comic Neue', 'Comic Sans MS', cursive, sans-serif;
-  background: #fffbe7;
-  border: 4px solid #ffb300;
-  border-radius: 18px;
-  box-shadow: 0 6px 32px rgba(0,0,0,0.10), 0 0 0 6px #fffbe7;
-  padding: 2.5rem 1.5rem;
-  margin: 2rem 0;
-  position: relative;
+:root {
+  /* Color Palette (Inspired by Overwatch Mascott) */
+  --color-primary-bg: #f5f0e1; /* Very light tan for general backgrounds */
+  --color-secondary-bg: rgba(255, 245, 230, 0.7); /* Light, warm glassmorphism card background */
+  --color-border: rgba(181, 159, 125, 0.4); /* Subtle brown border for glass elements */
+  --color-text-dark: #543d2b; /* Rich brown for dark text */
+  --color-text-light: #77634d; /* Lighter brown for secondary text */
+  --color-accent: #e08a1c; /* Warm orange for buttons/highlights (Guitar & Accents) */
+  --color-accent-hover: #d17d0e;
+  --color-error: #e74c3c;
+  --color-success: #27ae60;
+  --color-placeholder: #a28b72;
+
+  /* Header Colors */
+  --color-header-text: #fcfcfc; /* Creamy white text for header (Text Bubble Highlight) */
+  --color-header-subtitle: #ffffff; /* Lighter tan subtitle */
+
+  /* Shadows */
+  --shadow-light: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-medium: 0 8px 24px rgba(0, 0, 0, 0.15);
+  --shadow-header: 0 4px 10px rgba(0, 0, 0, 0.3); /* Slightly stronger shadow for the header */
+
+  /* Border Radius */
+  --radius-small: 6px;
+  --radius-medium: 12px;
+  --radius-large: 20px;
+
+  /* Transitions */
+  --transition-fast: 0.2s ease-out;
 }
 
-.comic-wall h2 {
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-image: url('./assets/bgDark.png');
+  background-size: cover; 
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-color: var(--color-secondary-bg);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  backdrop-filter: blur(6px);
+}
+
+.app-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  backdrop-filter: blur(15px);
+  color: var(--color-header-text);
+  padding: 1.5rem 1rem;
+  text-align: center;
+  letter-spacing: 1.5px;
+  box-shadow: var(--shadow-header);
+  z-index: 10;
+}
+
+.app-title {
+  margin: 0;
   font-size: 2.2rem;
-  color: #ff4081;
-  letter-spacing: 2px;
-  text-shadow: 2px 2px 0 #fff, 4px 4px 0 #ffb300;
-  margin-bottom: 0.5rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
 }
 
-.comic-wall .comic-welcome {
-  font-size: 1.1rem;
-  color: #333;
+.app-subtitle {
+  margin: 0.5rem 0 0;
+  font-size: 0.95rem;
+  color: var(--color-header-subtitle);
+}
+
+.app-main {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem 1rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.feedback-container {
+  background: var(--color-secondary-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-large);
+  box-shadow: var(--shadow-medium);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  padding: 2.5rem 2rem;
+  max-width: 600px;
+  width: 100%;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  margin: 0 auto;
+}
+
+.feedback-container::before {
+  content: '';
+  position: absolute;
+  top: -50px;
+  left: -50px;
+  width: 150px;
+  height: 150px;
+  background: rgba(255, 245, 230, 0.15);
+  border-radius: 50%;
+  filter: blur(30px);
+  z-index: -1;
+}
+
+.feedback-container::after {
+  content: '';
+  position: absolute;
+  bottom: -50px;
+  right: -50px;
+  width: 120px;
+  height: 120px;
+  background: rgba(255, 245, 230, 0.15); 
+  border-radius: 50%;
+  filter: blur(25px);
+  z-index: -1;
+}
+
+
+/* --- Headings & Text --- */
+.feedback-container h2 {
+  font-size: 2.2rem;
+  color: var(--color-text-dark);
+  margin-bottom: 0.75rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.feedback-container .welcome-message {
+  font-size: 1rem;
+  color: var(--color-text-light);
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+/* --- Input Field --- */
+.modern-input-field {
+  width: calc(100% - 2rem);
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-medium);
+  background: rgba(255, 245, 230, 0.8); 
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  font-size: 1rem;
+  color: var(--color-text-dark);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  resize: vertical;
+}
+
+.modern-input-field:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(224, 138, 28, 0.2);
+}
+
+.modern-input-field::placeholder {
+  color: var(--color-placeholder);
+}
+
+/* --- Buttons --- */
+.modern-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: var(--radius-small);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.modern-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-light);
+}
+
+.modern-button:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.modern-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.button-primary {
+  background-color: var(--color-accent);
+  color: #fff;
+}
+
+.button-primary:hover:not(:disabled) {
+  background-color: var(--color-accent-hover);
+}
+
+.button-secondary {
+  background-color: #d6d1c4;
+  color: var(--color-text-dark);
+  border: 1px solid #b8b0a3;
+}
+
+.button-secondary:hover:not(:disabled) {
+  background-color: #c8c3b6;
+}
+
+/* --- Form Layouts --- */
+.form-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.char-counter {
+  font-size: 0.85rem;
+  color: var(--color-text-light);
+}
+
+.char-counter.invalid {
+  color: var(--color-error);
+  font-weight: 500;
+}
+
+.error-message {
+  color: var(--color-error);
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+  text-align: left;
+}
+
+/* --- Feedback Wall --- */
+.feedback-wall-section {
+  margin-top: 2.5rem;
+  text-align: left;
+}
+
+.feedback-wall-section h3 {
+  font-size: 1.5rem;
+  color: var(--color-text-dark);
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 0.75rem;
   margin-bottom: 1.5rem;
+  font-weight: 600;
 }
 
-.comic-bubble-list {
+.message-list {
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
-.comic-bubble {
-  background: #fff;
-  border: 3px solid #2196f3;
-  border-radius: 24px 24px 24px 8px;
-  box-shadow: 4px 8px 0 #ffb300, 0 2px 12px rgba(0,0,0,0.08);
-  margin-bottom: 24px;
-  padding: 1.2rem 1.5rem 1.2rem 2.2rem;
+.message-card {
+  background: var(--color-secondary-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-medium);
+  box-shadow: var(--shadow-light);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  margin-bottom: 1.25rem;
+  padding: 1.2rem 1.5rem;
   position: relative;
-  font-size: 1.1rem;
-  color: #222;
+  font-size: 0.95rem;
+  color: var(--color-text-dark);
   word-break: break-word;
-  transition: box-shadow 0.2s;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
 }
 
-.comic-bubble .comic-author {
-  font-weight: bold;
-  color: #ff4081;
-  font-size: 1.05rem;
-  margin-bottom: 0.2rem;
-  display: inline-block;
+.message-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-medium);
 }
 
-.comic-bubble .comic-time {
-  color: #888;
-  font-size: 0.9rem;
-  margin-left: 10px;
-}
-
-.comic-bubble .comic-actions {
-  position: absolute;
-  top: 12px;
-  right: 18px;
+.message-header {
   display: flex;
-  gap: 8px;
+  align-items: center;
+  margin-bottom: 0.5rem;
 }
 
-.comic-bubble .comic-edit {
-  background: #fff176;
-  color: #222;
-  border: 2px solid #ffb300;
-  border-radius: 8px;
-  font-weight: bold;
-  padding: 0.3rem 1rem;
-  cursor: pointer;
-  box-shadow: 2px 2px 0 #ffb300;
-  transition: background 0.2s;
-}
-
-.comic-bubble .comic-delete {
-  background: #ff5252;
+.message-avatar {
+  width: 36px;
+  height: 36px;
+  background-color: var(--color-accent);
   color: #fff;
-  border: 2px solid #c62828;
-  border-radius: 8px;
-  font-weight: bold;
-  padding: 0.3rem 1rem;
-  cursor: pointer;
-  box-shadow: 2px 2px 0 #c62828;
-  transition: background 0.2s;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: 500;
+  margin-right: 0.75rem;
+  flex-shrink: 0;
 }
 
-.comic-bubble textarea {
-  font-family: 'Comic Neue', 'Comic Sans MS', cursive, sans-serif;
+.message-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.message-author {
+  font-weight: 600;
+  color: var(--color-text-dark);
   font-size: 1rem;
-  border: 2px solid #2196f3;
-  border-radius: 10px;
-  padding: 0.5rem;
-  margin-bottom: 8px;
-  width: 100%;
-  background: #fffde7;
+}
+
+.message-time {
+  color: var(--color-text-light);
+  font-size: 0.8rem;
+  margin-top: 2px;
+}
+
+.message-content {
+  font-size: 1rem;
+  color: var(--color-text-dark);
+  line-height: 1.6;
+  margin-top: 0.75rem;
+  white-space: pre-wrap;
+}
+
+.message-actions {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.action-button {
+  background: transparent;
+  border: none;
+  color: var(--color-text-light);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: color var(--transition-fast);
+}
+
+.action-button:hover {
+  color: var(--color-accent);
+}
+
+.action-button.delete {
+  color: var(--color-error);
+}
+
+.action-button.delete:hover {
+  color: #c53030;
+}
+
+.edit-textarea {
+  width: calc(100% - 2rem);
+  padding: 0.75rem;
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-small);
+  font-size: 0.95rem;
+  font-family: 'Inter', sans-serif;
+  margin-bottom: 0.75rem;
+  background: rgba(255, 245, 230, 0.8);
   resize: vertical;
 }
 
-.comic-bubble .comic-edit-save {
-  background: #69f0ae;
-  color: #222;
-  border: 2px solid #00c853;
-  border-radius: 8px;
-  font-weight: bold;
-  padding: 0.3rem 1rem;
-  cursor: pointer;
-  box-shadow: 2px 2px 0 #00c853;
-  margin-right: 8px;
+.edit-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
 }
 
-.comic-bubble .comic-edit-cancel {
-  background: #bdbdbd;
-  color: #222;
-  border: 2px solid #757575;
-  border-radius: 8px;
-  font-weight: bold;
-  padding: 0.3rem 1rem;
-  cursor: pointer;
-  box-shadow: 2px 2px 0 #757575;
+/* --- Name Modal --- */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
 }
 
-.comic-bubble .comic-message {
-  font-size: 1.15rem;
-  color: #222;
-  margin-top: 0.2rem;
-  white-space: pre-wrap;
+.modal-content {
+  background: var(--color-secondary-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-large);
+  box-shadow: var(--shadow-medium);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 2.5rem;
+  min-width: 320px;
+  max-width: 450px;
+  width: 90%;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  animation: fadeInScale 0.3s ease-out;
+}
+
+.modal-content h2 {
+  font-size: 1.8rem;
+  margin-bottom: 0.75rem;
+  color: var(--color-text-dark);
+}
+
+.modal-content p {
+  font-size: 1rem;
+  color: var(--color-text-light);
+  margin-bottom: 1.5rem;
   line-height: 1.5;
 }
 
-.comic-bubble .comic-emoji {
-  font-size: 1.3em;
-  vertical-align: middle;
-} 
+.modal-input {
+  width: calc(100% - 2rem);
+  padding: 0.75rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-medium);
+  background: rgba(255, 245, 230, 0.8);
+  font-size: 1rem;
+  color: var(--color-text-dark);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.modal-input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(224, 138, 28, 0.2);
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 768px) {
+  .app-header {
+    padding: 1rem 0.5rem;
+  }
+  .app-title {
+    font-size: 1.8rem;
+  }
+  .app-subtitle {
+    font-size: 0.9rem;
+  }
+  .app-main {
+    padding: 1rem 0.5rem;
+  }
+  .feedback-container {
+    padding: 2rem 1rem;
+    width: 100%;
+  }
+
+  .feedback-container h2 {
+    font-size: 1.8rem;
+  }
+
+  .form-controls {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .modern-button {
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+
+  .modal-buttons {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
+/* --- Keyframe Animations --- */
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
