@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import {useSharedState} from "overwatch-ts"
+import { useSharedState } from "../Hooks/useSharedState";
 
 type Author = {
     name: string

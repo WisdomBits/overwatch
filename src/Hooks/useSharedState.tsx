@@ -10,7 +10,7 @@ interface Options<T> {
   store?: ServerStore;
 }
 
-export function useSharedState<T>(key: string, options?: Options<T>): [T, (v: T) => void] {
+export function useSharedState<T>(key: string, options?: Options<T>): [T, (v: T | ((prev: T) => T)) => void] {
   const store = options?.store || globalStore;
   const [value, setValue] = useState<T>(() => getSharedState<T>(key, store));
 
@@ -27,8 +27,15 @@ export function useSharedState<T>(key: string, options?: Options<T>): [T, (v: T)
     };
   }, [key]);
 
-  const setter = (newValue: T) => {
+  const setter = (value: T | ((prev: T) => T)) => {
     const middleware = options?.middleware;
+    const prevValue = getSharedState<T>(key, store);
+
+    const newValue =
+      typeof value === 'function'
+        ? (value as (prev: T) => T)(prevValue)
+        : value;
+
     if (middleware?.length) {
       runMiddlewareChain(middleware, newValue, (processedValue) => {
         setSharedState<T>(key, processedValue, store);

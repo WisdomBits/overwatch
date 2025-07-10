@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useBroadcast} from "overwatch-ts"
+import { useBroadcast } from '../Hooks/useBroadcast';
 
 
 // cmd + shift + P -> restart TS server

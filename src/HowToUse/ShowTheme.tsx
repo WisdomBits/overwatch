@@ -1,5 +1,5 @@
+import { useSharedState } from "../Hooks/useSharedState";
 
-import {useSharedState} from "overwatch-ts"
 
 type Theme = {
   type: string
