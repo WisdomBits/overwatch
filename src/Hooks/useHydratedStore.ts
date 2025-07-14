@@ -1,3 +1,4 @@
+"use client"
 import { useEffect, useState } from 'react';
 import { globalStore, ServerStore } from '../core-utils/createServerStore';
 export function useHydratedStore(snapshot: Record<string, any>, store: ServerStore = globalStore) {

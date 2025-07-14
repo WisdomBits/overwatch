@@ -1,3 +1,4 @@
+"use client"
 import { useEffect, useState, useRef } from 'react';
 import { globalStore, ServerStore } from '../core-utils/createServerStore';
 import { getSharedState } from '../core-utils/sharedState';

@@ -1,3 +1,4 @@
+"use client"
 import pubsub from '../core/pubsub';
 
 export function useBroadcast<T>(eventName: string) {

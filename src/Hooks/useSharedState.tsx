@@ -1,3 +1,4 @@
+"use client"
 import { useEffect, useState } from 'react';
 import pubsub from '../core/pubsub';
 import { runMiddlewareChain } from '../core-utils/Middleware';
