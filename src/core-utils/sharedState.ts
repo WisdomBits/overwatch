@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { produce } from 'immer';
 import pubsub from '../core/pubsub';
 import { runMiddlewares } from './Middleware';
@@ -5,11 +6,12 @@ import { globalStore, ServerStore } from './createServerStore';
 import { persistValue, getPersistedValue, setPersistence } from './persistance';
 
 
-export function createSharedState<T>(key: string, initialValue: T, options?: {store?: ServerStore, persist?: "localStorage" | "sessionStorage" }) {
+export function createSharedState<T>(key: string, initialValue: T, options?: {store?: ServerStore, persist?: "localStorage" | "sessionStorage"}) {
   let store = options?.store;
   if(!store) store = globalStore
   if(options?.persist) setPersistence(key, options?.persist);
   const persisted = getPersistedValue<T>(key);
+  // eslint-disable-next-line no-prototype-builtins
   if (!store.getSnapshot().hasOwnProperty(key)) {
     store.set(key,  persisted !== undefined ? persisted : initialValue);
   }

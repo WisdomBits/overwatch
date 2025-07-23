@@ -1,48 +1,60 @@
-"use client"
+"use client";
+
 import { useEffect, useState } from 'react';
 import pubsub from '../core/pubsub';
 import { runMiddlewareChain } from '../core-utils/Middleware';
 import { getSharedState, setSharedState } from '../core-utils/sharedState';
 import { globalStore, ServerStore } from '../core-utils/createServerStore';
+import { KeyRegistry } from '../core-utils/keyRegistery';
 
 type Middleware<T> = (value: T, next: (v: T) => void) => void;
+
 interface Options<T> {
   middleware?: Middleware<T>[];
   store?: ServerStore;
 }
 
-export function useSharedState<T>(key: string, options?: Options<T>): [T, (v: T | ((prev: T) => T)) => void] {
+export function useSharedState<K extends keyof KeyRegistry>(
+  key: K,
+  options?: Options<KeyRegistry[K]>
+): [KeyRegistry[K], (v: KeyRegistry[K] | ((prev: KeyRegistry[K]) => KeyRegistry[K])) => void] {
   const store = options?.store || globalStore;
-  const [value, setValue] = useState<T>(() => getSharedState<T>(key, store));
+
+  const [value, setValue] = useState<KeyRegistry[K]>(
+    () => getSharedState<KeyRegistry[K]>(key as string, store)
+  );
 
   useEffect(() => {
     if (store !== globalStore) return;
-    const update = (newValue: T) => {
+
+    const update = (newValue: KeyRegistry[K]) => {
       setValue(newValue);
     };
 
-    pubsub.subscribe<T>(key, update);
+    pubsub.subscribe<KeyRegistry[K]>(key as string, update);
 
     return () => {
-      pubsub.unsubscribe<T>(key, update);
+      pubsub.unsubscribe<KeyRegistry[K]>(key as string, update);
     };
-  }, [key]);
+  }, [key, store]);
 
-  const setter = (value: T | ((prev: T) => T)) => {
+  const setter = (
+    value: KeyRegistry[K] | ((prev: KeyRegistry[K]) => KeyRegistry[K])
+  ) => {
     const middleware = options?.middleware;
-    const prevValue = getSharedState<T>(key, store);
+    const prevValue = getSharedState<KeyRegistry[K]>(key as string, store);
 
     const newValue =
       typeof value === 'function'
-        ? (value as (prev: T) => T)(prevValue)
+        ? (value as (prev: KeyRegistry[K]) => KeyRegistry[K])(prevValue)
         : value;
 
     if (middleware?.length) {
       runMiddlewareChain(middleware, newValue, (processedValue) => {
-        setSharedState<T>(key, processedValue, store);
+        setSharedState<KeyRegistry[K]>(key as string, processedValue, store);
       });
     } else {
-      setSharedState<T>(key, newValue, store);
+      setSharedState<KeyRegistry[K]>(key as string, newValue, store);
     }
   };
 
