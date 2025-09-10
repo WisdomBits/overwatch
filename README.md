@@ -12,7 +12,7 @@ A minimal API with developer flexibility, TypeScript-first state-management solu
 Goal with OverWatch was to prioritize reusability, a positive developer experience, and clear component-level state and event tracking.
 
 
-Read the full documentation at [overwatchts.in/docs](https://overwatchts.in/docs).
+Read the full documentation at [overwatchts.in/docs](https://docs.overwatchts.in/docs).
 
 ---
 
